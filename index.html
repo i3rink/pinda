@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinda</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --card: #22223b;
+    --accent: #e94560;
+    --accent2: #f5a623;
+    --text: #f0eaff;
+    --muted: #9090b0;
+    --green: #4ecdc4;
+    --border: rgba(255,255,255,0.08);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+
+  .screen { display: none; width: 100%; max-width: 560px; animation: fadeIn 0.4s ease; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), #c73652); color: white; }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-small { width: auto; padding: 8px 16px; font-size: 14px; border-radius: 8px; }
+  .btn-danger { background: rgba(233,69,96,0.15); color: var(--accent); border: 1px solid rgba(233,69,96,0.3); }
+  .btn-success { background: rgba(78,205,196,0.15); color: var(--green); border: 1px solid rgba(78,205,196,0.3); }
+  .btn + .btn { margin-top: 10px; }
+
+  .question-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+  }
+  .question-item span { flex: 1; font-size: 14px; line-height: 1.4; }
+  .question-item .del-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .question-item .del-btn:hover { color: var(--accent); }
+
+  .add-q-row { display: flex; gap: 8px; margin-top: 12px; }
+  .add-q-row input { flex: 1; }
+  .add-q-row button { flex-shrink: 0; }
+
+  .custom-count { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .headphones-screen {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .headphones-emoji { font-size: 80px; margin-bottom: 20px; animation: bounce 1s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+  .headphones-screen h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+  .headphones-screen p { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 380px; margin: 0 auto 32px; }
+
+  .question-screen { text-align: center; }
+  .q-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .q-counter { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .q-player { font-size: 13px; color: var(--accent); font-weight: 600; }
+  .progress-bar { width: 100%; height: 4px; background: var(--surface); border-radius: 99px; margin-bottom: 32px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.3s ease; }
+  .question-text { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 32px; }
+  .answers-grid { display: grid; gap: 10px; width: 100%; }
+  .answer-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    text-align: left;
+  }
+  .answer-btn:hover { border-color: var(--accent); background: rgba(233,69,96,0.08); }
+  .answer-btn:active { transform: scale(0.98); }
+  .answer-btn.selected { border-color: var(--accent); background: rgba(233,69,96,0.15); }
+  .freeform-input { width: 100%; }
+  .freeform-input input { font-size: 18px; text-align: center; padding: 16px; }
+  .next-btn-wrap { margin-top: 24px; }
+
+  .reveal-screen { width: 100%; }
+  .reveal-screen h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+  .reveal-screen .subtitle { color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 28px; }
+  .reveal-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .reveal-item .q-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .reveal-item .q-text { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
+  .reveal-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .reveal-answer { background: var(--surface); border-radius: 8px; padding: 10px 12px; }
+  .reveal-answer .who { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+  .reveal-answer .what { font-size: 14px; font-weight: 600; }
+  .reveal-item.match { border-color: rgba(78,205,196,0.4); }
+  .reveal-item.match .reveal-answer { background: rgba(78,205,196,0.08); }
+  .match-badge { display: inline-block; background: var(--green); color: #0f0f1a; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; float: right; }
+
+  .score-screen { text-align: center; }
+  .score-emoji { font-size: 80px; margin-bottom: 16px; }
+  .score-title { font-family: 'Fraunces', serif; font-size: 40px; font-weight: 900; margin-bottom: 8px; }
+  .score-sub { font-size: 16px; color: var(--muted); margin-bottom: 24px; }
+  .score-number { font-family: 'Fraunces', serif; font-size: 72px; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 8px; }
+  .score-label { font-size: 14px; color: var(--muted); margin-bottom: 40px; }
+  .confetti-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+  .confetti-piece { position: absolute; width: 10px; height: 10px; border-radius: 2px; animation: confettiFall linear forwards; }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .section-title { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .divider { width: 100%; height: 1px; background: var(--border); margin: 20px 0; }
+  .warning { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 16px; }
+
+  @media (max-width: 480px) {
+    .logo { font-size: 56px; }
+    .question-text { font-size: 22px; }
+    .score-number { font-size: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: LANDING -->
+<div class="screen active" id="screen-landing">
+  <div class="logo">Pinda</div>
+  <div class="tagline">How well do you really know each other?</div>
+  <div class="card">
+    <h2>Who's playing?</h2>
+    <div class="input-group">
+      <label>Player 1 (answers first)</label>
+      <input type="text" id="p1-name" placeholder="e.g. Sarah" maxlength="20">
+    </div>
+    <div class="input-group">
+      <label>Player 2 (does the guessing)</label>
+      <input type="text" id="p2-name" placeholder="e.g. Dave" maxlength="20">
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="goToSetup()">Set up the quiz</button>
+</div>
+
+<!-- SCREEN 2: QUESTION SETUP -->
+<div class="screen" id="screen-setup">
+  <div class="logo" style="font-size:40px;margin-bottom:4px;">Pinda</div>
+  <div class="tagline" style="margin-bottom:24px;">Pick your questions</div>
+  <div class="card">
+    <h2>Questions</h2>
+    <div class="section-title">Tap the ✕ to remove any you don't want</div>
+    <div id="question-list"></div>
+    <div class="divider"></div>
+    <div class="section-title">Add your own (max 3)</div>
+    <div class="add-q-row">
+      <input type="text" id="custom-q-input" placeholder="Type your question..." maxlength="100">
+      <button class="btn btn-small btn-success" onclick="addCustomQuestion()">Add</button>
+    </div>
+    <div class="custom-count" id="custom-count">0 of 3 custom questions added</div>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">Let's go!</button>
+  <button class="btn btn-secondary" style="margin-top:10px" onclick="showScreen('screen-landing')">Back</button>
+</div>
+
+<!-- SCREEN 3: HANDOFF (P2 look away) -->
+<div class="screen" id="screen-handoff-p2">
+  <div class="card headphones-screen">
+    <div class="headphones-emoji">🎧</div>
+    <h2 id="handoff-p2-title"></h2>
+    <p id="handoff-p2-text"></p>
+    <button class="btn btn-primary" id="handoff-p2-btn" onclick="startRound1()">Ready, let's go</button>
+  </div>
+</div>
+
+<!-- SCREEN 4: QUESTIONS (Round 1 - P1 answers about themselves) -->
+<div class="screen" id="screen-questions">
+  <div class="q-header">
+    <span class="q-counter" id="q-counter">Question 1 of 20</span>
+    <span class="q-player" id="q-player"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="question-text" id="question-text"></div>
+  <div class="answers-grid" id="answers-container"></div>
+  <div class="next-btn-wrap">
+    <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next</button>
+  </div>
+</div>
+
+<!-- SCREEN 5: HANDOFF (P1 look away, P2 guesses) -->
+<div class="screen" id="screen-handoff-p1">
+  <div class="card headphones-screen">
+    <div class="headphones-emoji">🎧</div>
+    <h2 id="handoff-p1-title"></h2>
+    <p id="handoff-p1-text"></p>
+    <button class="btn btn-primary" onclick="startRound2()">I'm ready</button>
+  </div>
+</div>
+
+<!-- SCREEN 6: REVEAL -->
+<div class="screen" id="screen-reveal">
+  <div style="text-align:center;margin-bottom:8px;">
+    <div class="logo" style="font-size:40px;margin-bottom:4px;">Pinda</div>
+  </div>
+  <h2 style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;margin-bottom:8px;text-align:center;">The Big Reveal</h2>
+  <div class="subtitle" style="color:var(--muted);font-size:14px;text-align:center;margin-bottom:28px;">How well did you really know each other?</div>
+  <div id="reveal-list" style="width:100%;"></div>
+  <button class="btn btn-primary" style="margin-top:20px;" onclick="showScore()">See the score</button>
+</div>
+
+<!-- SCREEN 7: SCORE -->
+<div class="screen" id="screen-score">
+  <div class="score-screen">
+    <div class="score-emoji" id="score-emoji"></div>
+    <div class="score-title" id="score-title"></div>
+    <div class="score-number" id="score-number"></div>
+    <div class="score-label" id="score-label"></div>
+    <div class="score-sub" id="score-sub"></div>
+    <button class="btn btn-primary" onclick="playAgain()">Play again</button>
+    <button class="btn btn-secondary" style="margin-top:10px" onclick="showScreen('screen-landing')">Change players</button>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="confetti-wrap"></div>
+
+<script>
+const DEFAULT_QUESTIONS = [
+  { text: "Who is the better cook?", type: "either-or" },
+  { text: "Who takes longer to get ready?", type: "either-or" },
+  { text: "Who is more likely to cry at a film?", type: "either-or" },
+  { text: "Who is the messier one?", type: "either-or" },
+  { text: "Who is better with money?", type: "either-or" },
+  { text: "Who would survive longer in the wild?", type: "either-or" },
+  { text: "Who apologises first after an argument?", type: "either-or" },
+  { text: "Who is the funnier one?", type: "either-or" },
+  { text: "Who is more stubborn?", type: "either-or" },
+  { text: "Who is the bigger worrier?", type: "either-or" },
+  { text: "What is my favourite takeaway?", type: "freeform" },
+  { text: "What is my favourite drink?", type: "freeform" },
+  { text: "What would I choose as my last meal?", type: "freeform" },
+  { text: "What is my most annoying habit?", type: "freeform" },
+  { text: "What is my idea of a perfect Saturday?", type: "freeform" },
+  { text: "What job would I have had in another life?", type: "freeform" },
+  { text: "What am I secretly really good at?", type: "freeform" },
+  { text: "What is the one thing I can't live without?", type: "freeform" },
+  { text: "What would I spend a lottery win on first?", type: "freeform" },
+  { text: "If I could live anywhere in the world, where would it be?", type: "freeform" }
+];
+
+let state = {
+  p1: '', p2: '',
+  questions: [],
+  customCount: 0,
+  round: 1,
+  currentQ: 0,
+  p1Answers: [],
+  p2Answers: [],
+  currentAnswer: null
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goToSetup() {
+  const p1 = document.getElementById('p1-name').value.trim();
+  const p2 = document.getElementById('p2-name').value.trim();
+  if (!p1 || !p2) { alert('Both players need a name!'); return; }
+  state.p1 = p1;
+  state.p2 = p2;
+  state.questions = DEFAULT_QUESTIONS.map((q,i) => ({ ...q, id: i, custom: false }));
+  state.customCount = 0;
+  renderQuestionList();
+  showScreen('screen-setup');
+}
+
+function renderQuestionList() {
+  const list = document.getElementById('question-list');
+  list.innerHTML = '';
+  state.questions.forEach((q, i) => {
+    const el = document.createElement('div');
+    el.className = 'question-item';
+    el.innerHTML = `<span>${q.text}</span><button class="del-btn" onclick="deleteQuestion(${i})">✕</button>`;
+    list.appendChild(el);
+  });
+  document.getElementById('custom-count').textContent = `${state.customCount} of 3 custom questions added`;
+}
+
+function deleteQuestion(i) {
+  if (state.questions[i].custom) state.customCount--;
+  state.questions.splice(i, 1);
+  renderQuestionList();
+}
+
+function addCustomQuestion() {
+  if (state.customCount >= 3) { alert("You've already added 3 custom questions — that's the max!"); return; }
+  const input = document.getElementById('custom-q-input');
+  const text = input.value.trim();
+  if (!text) return;
+  state.questions.push({ text, type: 'freeform', custom: true });
+  state.customCount++;
+  input.value = '';
+  renderQuestionList();
+}
+
+function startGame() {
+  if (state.questions.length < 1) { alert("Add at least one question!"); return; }
+  document.getElementById('handoff-p2-title').textContent = `${state.p2}, headphones on!`;
+  document.getElementById('handoff-p2-text').textContent = `${state.p1} is about to answer some questions about themselves. No peeking. Hand the phone to ${state.p1} when you're ready.`;
+  document.getElementById('handoff-p2-btn').textContent = `I'm ${state.p1}, let's go`;
+  showScreen('screen-handoff-p2');
+}
+
+function startRound1() {
+  state.round = 1;
+  state.currentQ = 0;
+  state.p1Answers = [];
+  renderQuestion();
+  showScreen('screen-questions');
+}
+
+function renderQuestion() {
+  const q = state.questions[state.currentQ];
+  const total = state.questions.length;
+  const isRound1 = state.round === 1;
+  const answerer = isRound1 ? state.p1 : state.p2;
+  const subject = isRound1 ? state.p1 : state.p1;
+
+  document.getElementById('q-counter').textContent = `Question ${state.currentQ + 1} of ${total}`;
+  document.getElementById('q-player').textContent = isRound1 ? `${state.p1}'s answers` : `${state.p2}'s guesses`;
+  document.getElementById('progress-fill').style.width = `${((state.currentQ) / total) * 100}%`;
+
+  let questionText = q.text;
+  if (!isRound1) {
+    questionText = questionText.replace(/^Who /, 'Who ');
+    if (q.type === 'freeform') {
+      questionText = questionText.replace(/^What is my/, `What is ${state.p1}'s`).replace(/^What would I/, `What would ${state.p1}`).replace(/^What am I/, `What is ${state.p1}`).replace(/^If I could/, `If ${state.p1} could`);
+    }
+  }
+  document.getElementById('question-text').textContent = questionText;
+
+  const container = document.getElementById('answers-container');
+  container.innerHTML = '';
+  state.currentAnswer = null;
+
+  if (q.type === 'either-or') {
+    const opts = [state.p1, state.p2];
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.textContent = opt;
+      btn.onclick = () => selectAnswer(btn, opt);
+      container.appendChild(btn);
+    });
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'freeform-input';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Type your answer...';
+    inp.maxLength = 60;
+    inp.autocomplete = 'off';
+    inp.oninput = () => { state.currentAnswer = inp.value.trim(); };
+    wrap.appendChild(inp);
+    container.appendChild(wrap);
+  }
+}
+
+function selectAnswer(btn, val) {
+  document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.currentAnswer = val;
+}
+
+function nextQuestion() {
+  const q = state.questions[state.currentQ];
+  if (!state.currentAnswer || (typeof state.currentAnswer === 'string' && state.currentAnswer.trim() === '')) {
+    alert('Pick an answer first!');
+    return;
+  }
+  if (state.round === 1) {
+    state.p1Answers.push(state.currentAnswer);
+  } else {
+    state.p2Answers.push(state.currentAnswer);
+  }
+  state.currentQ++;
+  if (state.currentQ >= state.questions.length) {
+    if (state.round === 1) {
+      document.getElementById('handoff-p1-title').textContent = `${state.p1}, headphones on!`;
+      document.getElementById('handoff-p1-text').textContent = `Done! Now it's ${state.p2}'s turn to guess your answers. Pass the phone over.`;
+      showScreen('screen-handoff-p1');
+    } else {
+      buildReveal();
+      showScreen('screen-reveal');
+    }
+  } else {
+    renderQuestion();
+  }
+}
+
+function startRound2() {
+  state.round = 2;
+  state.currentQ = 0;
+  state.p2Answers = [];
+  renderQuestion();
+  showScreen('screen-questions');
+}
+
+function buildReveal() {
+  const list = document.getElementById('reveal-list');
+  list.innerHTML = '';
+  let matches = 0;
+  state.questions.forEach((q, i) => {
+    const a1 = state.p1Answers[i] || '';
+    const a2 = state.p2Answers[i] || '';
+    const isMatch = a1.toLowerCase().trim() === a2.toLowerCase().trim();
+    if (isMatch) matches++;
+    const item = document.createElement('div');
+    item.className = 'reveal-item' + (isMatch ? ' match' : '');
+    item.innerHTML = `
+      <div class="q-label">Q${i+1} ${isMatch ? '<span class="match-badge">MATCH!</span>' : ''}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="reveal-answers">
+        <div class="reveal-answer">
+          <div class="who">${state.p1} said</div>
+          <div class="what">${a1 || '—'}</div>
+        </div>
+        <div class="reveal-answer">
+          <div class="who">${state.p2} guessed</div>
+          <div class="what">${a2 || '—'}</div>
+        </div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+  state.finalMatches = matches;
+  state.total = state.questions.length;
+}
+
+function showScore() {
+  const matches = state.finalMatches;
+  const total = state.total;
+  const pct = total > 0 ? matches / total : 0;
+  const scoreEl = document.getElementById('score-number');
+  const titleEl = document.getElementById('score-title');
+  const subEl = document.getElementById('score-sub');
+  const emojiEl = document.getElementById('score-emoji');
+  const labelEl = document.getElementById('score-label');
+
+  scoreEl.textContent = `${matches}/${total}`;
+  labelEl.textContent = `matches out of ${total} questions`;
+
+  if (pct >= 0.8) {
+    emojiEl.textContent = '🥂';
+    titleEl.textContent = 'Absolutely nailed it!';
+    subEl.textContent = `${state.p2} clearly pays attention. Either that or ${state.p1} is very predictable.`;
+    launchConfetti();
+  } else if (pct >= 0.6) {
+    emojiEl.textContent = '😄';
+    titleEl.textContent = 'Pretty good, actually!';
+    subEl.textContent = `Not bad at all. A few surprises in there but you know each other well.`;
+  } else if (pct >= 0.4) {
+    emojiEl.textContent = '🤔';
+    titleEl.textContent = 'Room for improvement...';
+    subEl.textContent = `You got some right but there were a few shockers. More conversations needed.`;
+  } else if (pct >= 0.2) {
+    emojiEl.textContent = '😬';
+    titleEl.textContent = 'Oh dear.';
+    subEl.textContent = `${state.p2}, do you actually know this person? Maybe put the phone down and have a chat.`;
+  } else {
+    emojiEl.textContent = '💀';
+    titleEl.textContent = 'Strangers.';
+    subEl.textContent = `Were you even trying? This is either very funny or very concerning.`;
+  }
+
+  showScreen('screen-score');
+}
+
+function launchConfetti() {
+  const wrap = document.getElementById('confetti-wrap');
+  wrap.innerHTML = '';
+  const colours = ['#e94560','#f5a623','#4ecdc4','#f0eaff','#a855f7'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.top = '-20px';
+    piece.style.background = colours[Math.floor(Math.random() * colours.length)];
+    piece.style.width = (Math.random() * 8 + 6) + 'px';
+    piece.style.height = (Math.random() * 8 + 6) + 'px';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    wrap.appendChild(piece);
+  }
+  setTimeout(() => { wrap.innerHTML = ''; }, 5000);
+}
+
+function playAgain() {
+  state.round = 1;
+  state.currentQ = 0;
+  state.p1Answers = [];
+  state.p2Answers = [];
+  state.currentAnswer = null;
+  document.getElementById('handoff-p2-title').textContent = `${state.p2}, headphones on!`;
+  document.getElementById('handoff-p2-text').textContent = `${state.p1} is about to answer some questions about themselves. No peeking. Hand the phone to ${state.p1} when you're ready.`;
+  document.getElementById('handoff-p2-btn').textContent = `I'm ${state.p1}, let's go`;
+  showScreen('screen-handoff-p2');
+}
+</script>
+</body>
+</html>
